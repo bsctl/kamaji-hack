@@ -1,0 +1,335 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: ingress-system
+  name: ingress-system
+---
+# Source: kubernetes-ingress/templates/controller-defaultcertsecret.yaml
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/tls
+metadata:
+  name: kubernetes-ingress-default-cert
+  namespace: ingress-system
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+  annotations:
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUREakNDQWZhZ0F3SUJBZ0lRSUV2S0lGZ0ROeE9tTEdTY3JidWtFekFOQmdrcWhraUc5dzBCQVFzRkFEQWcKTVI0d0hBWURWUVFERXhWcmRXSmxjbTVsZEdWekxXbHVaM0psYzNNdFkyRXdIaGNOTWpJd016RXlNVFkxTVRJMQpXaGNOTWpNd016RXlNVFkxTVRJMVdqQWxNU013SVFZRFZRUURFeHByZFdKbGNtNWxkR1Z6TFdsdVozSmxjM011ClpHVm1ZWFZzZERDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTTVKMUJoK09idnoKSm5MeGd3QVpOY3hPZUw5emE4eW5WOHMyZ200NE5PYXJLZzMvRUQ3dTREOWhFNmRCSTZ5WE9VUHJRTEZWeGRORAozMnlxNmxOTEJtMFpqQ1dkZXpBMGJ1UWtuNThhZjdFQWRwODVqSkVLNGpNb1BKeTJVTVNyUFBtUi8xT0czOGRyCnYxV3FBaUVsWGpZWDNpMUlmQWx6enA1QmRnMWh4Y0xnM1lCem9ybmlCalIxRkVqUXExK1BxL1JuRFlEYVFxNkYKcnd5V3FFbzZUdVFid1g0Uzg5MUdMcDVHWlRydU1OV0VZbGxYczhkVjFid0RYUWh2VWFjN0JWVmQzK085UGhZSwpkamdKRnJqUGVGMXBLaUtIdG9SaU1DYlMrRm5naHZNMWxMbkVVUHppODVLZWFhakhtdWw5d2RrSzFwQjdJSXZJCncxMTVGcXFSa0JzQ0F3RUFBYU0vTUQwd0RnWURWUjBQQVFIL0JBUURBZ1dnTUIwR0ExVWRKUVFXTUJRR0NDc0cKQVFVRkJ3TUJCZ2dyQmdFRkJRY0RBakFNQmdOVkhSTUJBZjhFQWpBQU1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQgpBUUJGUUpHMkdwNWxVK0NUZjExb3Q4RHVrYVczMm9rVFhvOEJRLzZ5S0lnQVFacUVzYUhQTUpGVHMvaHpUTndMClVyN1RhcituOWh2bXJwUnRobnFaQUdqZVFCMFlnUWUraXh6UTZJcXJPT0xXZWtUYm0zcDlvU0NuWFJLRTZzQ3IKa2lzMmxWbFFpQW9XL1hWaUVyTGJiRDN3UHVKeCtBazEvcE4vNWVEUXNvM2tYdTdzMFozZmNLaWlqeFZoVkpSZgp6ZmpqMlY4dy8rSVlCTk1Nb2lOMUhlcGZiV2p4bUFHVTcvbkYwd1pMb3JLeml4V3pyRjBWV0hMVzNPdUVzenpSCkpja0RPZkx2Tnc0N2RLREZtN3poOFd4UzhuWDlOb3RUYXFoMzFUcStkU0ViTW1yVjF4dDBMRHNVcUJCWTF3UysKUXhJYTc0SzNldVg3MUtJZ3ZOSEN3dDdCCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+  tls.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb2dJQkFBS0NBUUVBemtuVUdINDV1L01tY3ZHREFCazF6RTU0djNOcnpLZFh5emFDYmpnMDVxc3FEZjhRClB1N2dQMkVUcDBFanJKYzVRK3RBc1ZYRjAwUGZiS3JxVTBzR2JSbU1KWjE3TURSdTVDU2ZueHAvc1FCMm56bU0Ka1FyaU15ZzhuTFpReEtzOCtaSC9VNGJmeDJ1L1Zhb0NJU1ZlTmhmZUxVaDhDWFBPbmtGMkRXSEZ3dURkZ0hPaQp1ZUlHTkhVVVNOQ3JYNCtyOUdjTmdOcENyb1d2REphb1NqcE81QnZCZmhMejNVWXVua1psT3U0dzFZUmlXVmV6CngxWFZ2QU5kQ0c5UnB6c0ZWVjNmNDcwK0ZncDJPQWtXdU05NFhXa3FJb2UyaEdJd0p0TDRXZUNHOHpXVXVjUlEKL09MemtwNXBxTWVhNlgzQjJRcldrSHNnaThqRFhYa1dxcEdRR3dJREFRQUJBb0lCQUczK3ZlSWxoQ0Zzd0lhdgpzcHRkMWVyUHVPRFU2WmtoYmRYRWhmM0JhS3ZLZnMwaHdRYmRscU1VMzBiaW0rUU9hcEdGb21Rc2lTUmlYNEx4CkM2dElLUEFKbkVuK1U4NWJWdm05Y1lPRHZLeWp3NXlaTWhPd3l2WmVNUnVhdHl4MjVqZHBHc3p0OE9yRDBDMGMKVHJCZjNZRllicmFVbk5icGNqVytUL1ZJdWd0enAyZFp3QVQwNmF3M0puUmlBS1hET0h6bzI3S1lBczFzZFJyRwpPUDB2ODQyMTdkMUVzOXMvNUQyc2t3SHYzZ0RGRElBVGVRZkpxTm5tRmdYc0M5WWJBZVVLZ1psWFdWNDF0TEE0CmxORTFVOW5zY0FPWHNEYldWcHZPdjVtcTc2R2VXWDFGLytzR3Nhd1dvVHRiUExaUVkvVUJVc2tGamVGZjZFcTEKSmltbVRYa0NnWUVBMFcyMjZZZG5WTUE3bC9HOGRRQWIyYXdZWEFRL2Mya0F0bUhDUFIxOXN1UkpkYjlsMDk3MApDSEdBTm4xbG5SODFudlVBekFwWSs1K3oyNXJEN2NBMzFYTFEwS1IvK2FBWGFESGxWUUk3dENHclJZR2t1eUlhCmY2dURYTW1KQk9EYXRsR2xmanQrS0VRblZzTmtmMU9ZbWg1dVRoNEsrQjlzSHZ5T0JSWThlWVVDZ1lFQS9DbFoKenN1NGhvOStFbjQ5UkJUR01ydWlpRmxjeVZ0QXp1cDNjUDBKOXVEWUxuM1JHNzZ0SENZcENncXMwWE1GRkJIdQppS2Vnd1RURHVQeTRSekVFMERsdW1mM09RU0Yzd1VscTlwSURXa2RNdlVDSVdUN1pNc3lhVEd1UjJUcmZ3K2w5CmkxOW9IVzRuZ1lmRWNCUEdDSURsa3A2Nk54RnRwZEU0TURQbVJSOENnWUJZVUIrMTBuZHNjYk92bXl5UldmNWsKaUFHdHE4emw2ZjEyNnpweGN5SXljYm5ZZ1dGN09xVkZlamRLd3c0NmQ1S3crVGZnMHV3N0QxbFUzYXFKYzJrWQpCVmF3NU8xaVluUDhhQzRBN3ZRbVBaeHZydis4T2VGYXZRU2orQWhqbWo0Z2E4V1J1WnkxZGlmd21teWlsS25oCk03dm9EUnNyRG5VVmpBS0hlcHo5MFFLQmdBazg5cFpWN2xlM3NCVzdYRUUvUlplY09qTW1tdmloaURsTWE3M08KOTJ0OUIwNkV1NEY1dGR2ZkpnZkJKbDJ5Q2hDWEs1Y0VGU2FlNlVEQXVYdWFOeVB0eHJpTGpOL2ord0F3MFdOaApMQkJGcG5FVWlTcEQzQzg1UWJubEF2M2pZMGxKSjVsUWtIN3JoelQrcFZxNXpycUhCbUlkd0pLOTU3ZDRkOGVFClR6NWZBb0dBQkQwTEwzZFpzVk9DN3N2UXE1UTBRVk5LeEtMazlqT2FwKzltODFUZmdSUDgveVRzVzkveWhna0EKRW9Db0V3Q3FyVVAxRzFiZXc2M1dDYUh2R1dVV3pqd2FRSWVxakFTdGFPNnJxdk9VU2tnaHRIYlpzQ3BLT1UzbQo2MVhOcEJ6bWJEc1RDZjJ3a05YZFlkUS9GRnFpU1dKd0c5ak5pcWdaM2w5blNBS0tlalU9Ci0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+MANIFEST:
+---
+# Source: kubernetes-ingress/templates/controller-serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubernetes-ingress
+  namespace: ingress-system
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+---
+# Source: kubernetes-ingress/templates/default-backend-serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubernetes-ingress-default-backend
+  namespace: ingress-system
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+---
+# Source: kubernetes-ingress/templates/controller-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubernetes-ingress
+  namespace: ingress-system
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+data:
+---
+# Source: kubernetes-ingress/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubernetes-ingress
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - endpoints
+  - nodes
+  - pods
+  - services
+  - namespaces
+  - events
+  - serviceaccounts
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - "extensions"
+  - "networking.k8s.io"
+  resources:
+  - ingresses
+  - ingresses/status
+  - ingressclasses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - "extensions"
+  - "networking.k8s.io"
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - patch
+  - update
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - core.haproxy.org
+  resources:
+     - '*'
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+---
+# Source: kubernetes-ingress/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-ingress
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubernetes-ingress
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-ingress
+  namespace: ingress-system
+---
+# Source: kubernetes-ingress/templates/controller-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubernetes-ingress
+  namespace: ingress-system
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+  annotations:
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.32.160
+  ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+  externalIPs:
+---
+# Source: kubernetes-ingress/templates/default-backend-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubernetes-ingress-default-backend
+  namespace: ingress-system
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: kubernetes-ingress-default-backend
+    app.kubernetes.io/instance: kubernetes-ingress
+---
+# Source: kubernetes-ingress/templates/controller-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-ingress
+  namespace: ingress-system
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+spec:
+  replicas: 2
+  minReadySeconds: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubernetes-ingress
+      app.kubernetes.io/instance: kubernetes-ingress
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kubernetes-ingress
+        app.kubernetes.io/instance: kubernetes-ingress
+    spec:
+      serviceAccountName: kubernetes-ingress
+      terminationGracePeriodSeconds: 60
+      dnsPolicy: ClusterFirst
+      containers:
+        - name: kubernetes-ingress-controller
+          image: "haproxytech/kubernetes-ingress:1.7.5"
+          imagePullPolicy: IfNotPresent
+          args:
+          - --default-ssl-certificate=ingress-system/kubernetes-ingress-default-cert
+          - --configmap=ingress-system/kubernetes-ingress
+          - --default-backend-service=ingress-system/kubernetes-ingress-default-backend
+          - --publish-service=ingress-system/kubernetes-ingress
+          - --log=info
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            - name: stat
+              containerPort: 1024
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 1042
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 1042
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 20
+            httpGet:
+              path: /healthz
+              port: 1042
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 1
+            successThreshold: 1
+            timeoutSeconds: 1
+          env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+---
+# Source: kubernetes-ingress/templates/default-backend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-ingress-default-backend
+  namespace: ingress-system
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubernetes-ingress-default-backend
+      app.kubernetes.io/instance: kubernetes-ingress
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kubernetes-ingress-default-backend
+        app.kubernetes.io/instance: kubernetes-ingress
+    spec:
+      containers:
+        - name: kubernetes-ingress-default-backend
+          image: "k8s.gcr.io/defaultbackend-amd64:1.5"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+      serviceAccountName: kubernetes-ingress-default-backend
+      terminationGracePeriodSeconds: 60
+---
+# Source: kubernetes-ingress/templates/controller-ingressclass.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: haproxy
+  labels:
+    app.kubernetes.io/name: kubernetes-ingress
+    app.kubernetes.io/instance: kubernetes-ingress
+    app.kubernetes.io/version: 1.7.5
+spec:
+  controller: haproxy.org/ingress-controller/haproxy

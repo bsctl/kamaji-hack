@@ -1,0 +1,268 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manual
+  namespace: tenants
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      kamaji.clastix.io/soot: manual
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        kamaji.clastix.io/soot: manual
+    spec:
+      priorityClassName: system-node-critical
+      containers:
+      - name: kube-apiserver
+        image: k8s.gcr.io/kube-apiserver:v1.23.2
+        imagePullPolicy: IfNotPresent
+        command:
+        - kube-apiserver
+        - --advertise-address=135.181.161.20
+        - --allow-privileged=true
+        - --authorization-mode=Node,RBAC
+        - --client-ca-file=/etc/kubernetes/pki/ca.crt
+        - --enable-admission-plugins=NodeRestriction,PodNodeSelector,LimitRanger,ResourceQuota,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
+        - --enable-bootstrap-token-auth=true
+        - --etcd-cafile=/etc/kubernetes/pki/etcd-ca.crt
+        - --etcd-certfile=/etc/kubernetes/pki/apiserver-etcd-client.crt
+        - --etcd-keyfile=/etc/kubernetes/pki/apiserver-etcd-client.key
+        - --etcd-servers=https://192.168.32.10:2379,https://192.168.32.11:2379,https://192.168.32.12:2379
+        - --etcd-prefix=/manual
+        - --etcd-compaction-interval=0
+        - --insecure-port=0
+        - --service-cluster-ip-range=10.96.0.0/16
+        - --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt
+        - --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key
+        - --kubelet-preferred-address-types=ExternalIP,InternalIP,Hostname
+        - --proxy-client-cert-file=/etc/kubernetes/pki/front-proxy-client.crt
+        - --proxy-client-key-file=/etc/kubernetes/pki/front-proxy-client.key
+        - --requestheader-allowed-names=front-proxy-client
+        - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
+        - --requestheader-extra-headers-prefix=X-Remote-Extra-
+        - --requestheader-group-headers=X-Remote-Group
+        - --requestheader-username-headers=X-Remote-User
+        - --secure-port=6443
+        - --service-account-issuer=https://localhost:6443
+        - --service-account-key-file=/etc/kubernetes/pki/sa.pub
+        - --service-account-signing-key-file=/etc/kubernetes/pki/sa.key
+        - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
+        - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
+        - --egress-selector-config-file=/opt/konnectivity/egress-selector-configuration.yaml
+        livenessProbe:
+          httpGet:
+            path: /livez
+            port: 6443
+            scheme: HTTPS
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 6443
+            scheme: HTTPS
+        startupProbe:
+          httpGet:
+            path: /livez
+            port: 6443
+            scheme: HTTPS
+        resources:
+          requests:
+            cpu: 250m
+        volumeMounts:
+        - mountPath: /etc/kubernetes/konnectivity-server
+          name: konnectivity-uds
+          readOnly: false
+        - mountPath: /opt/konnectivity
+          name: egress-selector-configuration
+          readOnly: true
+        - mountPath: /etc/ssl/certs
+          name: ca-certs
+          readOnly: true
+        - mountPath: /etc/ca-certificates
+          name: etc-ca-certificates
+          readOnly: true
+        - mountPath: /usr/local/share/ca-certificates
+          name: usr-local-share-ca-certificates
+          readOnly: true
+        - mountPath: /usr/share/ca-certificates
+          name: usr-share-ca-certificates
+          readOnly: true
+        - mountPath: /etc/kubernetes/pki
+          name: k8s-certs
+          readOnly: true
+      - name: kube-scheduler
+        image: k8s.gcr.io/kube-scheduler:v1.23.2
+        imagePullPolicy: IfNotPresent
+        command:
+        - kube-scheduler
+        - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
+        - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
+        - --bind-address=0.0.0.0
+        - --kubeconfig=/etc/kubernetes/scheduler.conf
+        - --leader-elect=true
+        - --port=0  
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 10259
+            scheme: HTTPS
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 10259
+            scheme: HTTPS
+        resources:
+          requests:
+            cpu: 100m
+        volumeMounts:
+        - mountPath: /etc/kubernetes/scheduler.conf
+          name: scheduler-kubeconfig
+          subPath: scheduler.conf
+          readOnly: true
+      - name: kube-controller-manager
+        image: k8s.gcr.io/kube-controller-manager:v1.23.2
+        imagePullPolicy: IfNotPresent 
+        command:
+        - kube-controller-manager
+        - --allocate-node-cidrs=true
+        - --authentication-kubeconfig=/etc/kubernetes/controller-manager.conf
+        - --authorization-kubeconfig=/etc/kubernetes/controller-manager.conf
+        - --bind-address=0.0.0.0
+        - --client-ca-file=/etc/kubernetes/pki/ca.crt
+        - --cluster-name=manual
+        - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
+        - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
+        - --controllers=*,bootstrapsigner,tokencleaner
+        - --kubeconfig=/etc/kubernetes/controller-manager.conf
+        - --leader-elect=true
+        - --port=0
+        - --service-cluster-ip-range=10.96.0.0/16
+        - --cluster-cidr=10.36.0.0/16
+        - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
+        - --root-ca-file=/etc/kubernetes/pki/ca.crt
+        - --service-account-private-key-file=/etc/kubernetes/pki/sa.key
+        - --use-service-account-credentials=true
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 10257
+            scheme: HTTPS
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 10257
+            scheme: HTTPS
+        resources:
+          requests:
+            cpu: 200m
+        volumeMounts:
+        - mountPath: /etc/ssl/certs
+          name: ca-certs
+          readOnly: true
+        - mountPath: /etc/ca-certificates
+          name: etc-ca-certificates
+          readOnly: true
+        - mountPath: /usr/local/share/ca-certificates
+          name: usr-local-share-ca-certificates
+          readOnly: true
+        - mountPath: /usr/share/ca-certificates
+          name: usr-share-ca-certificates
+          readOnly: true
+        - mountPath: /etc/kubernetes/controller-manager.conf
+          name: controller-manager-kubeconfig
+          subPath: controller-manager.conf
+          readOnly: true
+        - mountPath: /etc/kubernetes/pki
+          name: k8s-certs
+          readOnly: true
+      - name: konnectivity-server-container
+        image: us.gcr.io/k8s-artifacts-prod/kas-network-proxy/proxy-server:v0.0.16
+        command: ["/proxy-server"]
+        args: [
+                "--logtostderr=true",
+                "--uds-name=/etc/kubernetes/konnectivity-server/konnectivity-server.socket",
+                "--cluster-cert=/etc/kubernetes/pki/apiserver.crt",
+                "--cluster-key=/etc/kubernetes/pki/apiserver.key",
+                "--mode=grpc",
+                "--server-port=0",
+                "--agent-port=8132",
+                "--admin-port=8133",
+                "--health-port=8134",
+                "--agent-namespace=kube-system",
+                "--agent-service-account=konnectivity-agent",
+                "--kubeconfig=/etc/kubernetes/konnectivity-server.conf",
+                "--authentication-audience=system:konnectivity-server"
+                ]        
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            host: 127.0.0.1
+            port: 8134
+            path: /healthz
+          initialDelaySeconds: 30
+          timeoutSeconds: 60
+        resources:
+          requests:
+            cpu: 100m
+        ports:
+        - name: agentport
+          containerPort: 8132
+          hostPort: 8132
+        - name: adminport
+          containerPort: 8133
+          hostPort: 8133
+        - name: healthport
+          containerPort: 8134
+          hostPort: 8134
+        volumeMounts:
+        - name: k8s-certs
+          mountPath: /etc/kubernetes/pki
+          readOnly: true
+        - name: konnectivity-server-kubeconfig
+          mountPath: /etc/kubernetes/konnectivity-server.conf
+          subPath: konnectivity-server.conf
+          readOnly: true
+        - name: konnectivity-uds
+          mountPath: /etc/kubernetes/konnectivity-server
+          readOnly: false
+      volumes:
+      - name: konnectivity-uds
+        emptyDir:
+          medium: Memory
+      - name: egress-selector-configuration
+        configMap:
+          name: egress-selector-configuration
+      - hostPath:
+          path: /etc/ssl/certs
+          type: DirectoryOrCreate
+        name: ca-certs
+      - hostPath:
+          path: /etc/ca-certificates
+          type: DirectoryOrCreate
+        name: etc-ca-certificates
+      - hostPath:
+          path: /usr/local/share/ca-certificates
+          type: DirectoryOrCreate
+        name: usr-local-share-ca-certificates
+      - hostPath:
+          path: /usr/share/ca-certificates
+          type: DirectoryOrCreate
+        name: usr-share-ca-certificates
+      - name: k8s-certs
+        secret:
+          secretName: k8s-certs
+      - name: scheduler-kubeconfig
+        secret:
+          secretName: scheduler-kubeconfig
+      - name: controller-manager-kubeconfig
+        secret:
+          secretName: controller-manager-kubeconfig
+      - name: konnectivity-server-kubeconfig
+        secret:
+          secretName: konnectivity-server-kubeconfig
