@@ -652,9 +652,22 @@ metadata:
   namespace: ${TENANT_NAMESPACE}
 spec:
   ports:
-  - port: ${TENANT_PUBLIC_PORT}
+  - name: apiserver
+    port: ${TENANT_PUBLIC_PORT}
     protocol: TCP
     targetPort: ${TENANT_PUBLIC_PORT}
+  - name: proxyserver
+    port: 8132
+    protocol: TCP
+    targetPort: 8132
+  - name: admin-proxyserver
+    port: 8133
+    protocol: TCP
+    targetPort: 8132
+  - name: health-proxyserver
+    port: 8134
+    protocol: TCP
+    targetPort: 8132
   selector:
     kamaji.clastix.io/soot: ${TENANT_NAME}
   type: LoadBalancer

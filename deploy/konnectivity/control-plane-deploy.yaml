@@ -181,7 +181,7 @@ spec:
         - mountPath: /etc/kubernetes/pki
           name: k8s-certs
           readOnly: true
-      - name: konnectivity-server-container
+      - name: konnectivity-server
         image: us.gcr.io/k8s-artifacts-prod/kas-network-proxy/proxy-server:v0.0.16
         command: ["/proxy-server"]
         args: [
@@ -202,7 +202,6 @@ spec:
         livenessProbe:
           httpGet:
             scheme: HTTP
-            host: 127.0.0.1
             port: 8134
             path: /healthz
           initialDelaySeconds: 30
@@ -213,13 +212,10 @@ spec:
         ports:
         - name: agentport
           containerPort: 8132
-          hostPort: 8132
         - name: adminport
           containerPort: 8133
-          hostPort: 8133
         - name: healthport
           containerPort: 8134
-          hostPort: 8134
         volumeMounts:
         - name: k8s-certs
           mountPath: /etc/kubernetes/pki
