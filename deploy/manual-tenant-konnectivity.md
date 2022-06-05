@@ -9,7 +9,7 @@ In Kamaji, a Tenant Cluster has the Control Plane running in the Admin Cluster. 
 * [Generate secrets](generate-secrets)
 * [Create tenant control plane](#create-tenant-control-plane)
 * [Configure tenant control plane](#configure-tenant-control-plane)
-* [Install Konnectivity Agent](#install-connectivity-agent)
+* [Install Konnectivity Agent](#install-konnectivity-agent)
 * [Install CNI](#install-cni)
 * [Prepare nodes-to-join](#prepare-nodes-to-join)
 * [Join nodes](#join-nodes)
@@ -547,7 +547,6 @@ spec:
         livenessProbe:
           httpGet:
             scheme: HTTP
-            host: 127.0.0.1
             port: 8134
             path: /healthz
           initialDelaySeconds: 30
@@ -558,13 +557,10 @@ spec:
         ports:
         - name: agentport
           containerPort: 8132
-          hostPort: 8132
         - name: adminport
           containerPort: 8133
-          hostPort: 8133
         - name: healthport
           containerPort: 8134
-          hostPort: 8134
         volumeMounts:
         - name: k8s-certs
           mountPath: /etc/kubernetes/pki
