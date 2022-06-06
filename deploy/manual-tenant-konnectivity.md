@@ -656,14 +656,6 @@ spec:
     port: 8132
     protocol: TCP
     targetPort: 8132
-  - name: admin-proxyserver
-    port: 8133
-    protocol: TCP
-    targetPort: 8132
-  - name: health-proxyserver
-    port: 8134
-    protocol: TCP
-    targetPort: 8132
   selector:
     kamaji.clastix.io/soot: ${TENANT_NAME}
   type: LoadBalancer
