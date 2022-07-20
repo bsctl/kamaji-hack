@@ -1,0 +1,26 @@
+[req]
+req_extensions      = req_ext
+distinguished_name  = req_distinguished_name
+prompt              = no
+
+[req_ext]
+subjectAltName = @alt_names
+
+[req_distinguished_name]
+commonName=kamaji.clastix.io
+
+[client]
+basicConstraints=CA:FALSE
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth
+
+[server]
+basicConstraints=CA:TRUE
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = localhost
+DNS.2 = *.kamaji.clastix.io
+
